@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Balatro Guide">
+<meta name="theme-color" content="#1a0800">
+<title>Balatro Companion</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#120800;--bg2:#1e0e02;--bg3:#2a1604;--bg4:#351c06;
+  --felt:#0a3d1a;
+  --gold:#d4a843;--gold2:#e8c06a;--gold3:rgba(212,168,67,0.15);
+  --red:#c0392b;--red2:rgba(192,57,43,0.2);
+  --blue:#2980b9;--blue2:rgba(41,128,185,0.18);
+  --purple:#8e44ad;--purple2:rgba(142,68,173,0.18);
+  --green:#27ae60;--green2:rgba(39,174,96,0.18);
+  --cream:#f5e6c8;--cream2:#e8d0a0;--cream3:#c4a06a;--cream4:#8a6030;
+  --bd:rgba(212,168,67,0.18);--bd2:rgba(212,168,67,0.35);
+  --H:'Playfair Display',serif;--B:'DM Sans',sans-serif;--M:'DM Mono',monospace;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;font-family:var(--B);color:var(--cream)}
+
+/* subtle felt texture */
+body::after{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px),repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(0,0,0,.04) 3px,rgba(0,0,0,.04) 4px);pointer-events:none;z-index:1000}
+
+/* ── HEADER ── */
+#hdr{flex-shrink:0;padding:10px 14px 8px;background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%);border-bottom:1px solid var(--bd);position:relative;overflow:hidden}
+#hdr::before{content:'♠ ♥ ♦ ♣';position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:24px;letter-spacing:6px;opacity:.05;pointer-events:none}
+.hdr-row{display:flex;align-items:center;justify-content:space-between}
+.logo-wrap{display:flex;align-items:baseline;gap:7px}
+.logo-title{font-family:var(--H);font-style:italic;font-size:24px;color:var(--gold);letter-spacing:.5px;line-height:1;text-shadow:0 0 30px rgba(212,168,67,.4)}
+.logo-sub{font-family:var(--M);font-size:9px;color:var(--cream4);letter-spacing:2.5px}
+.srch-btn{background:none;border:1px solid var(--bd);color:var(--cream3);border-radius:4px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:border-color .15s}
+.srch-btn:active{background:var(--bg3)}
+
+/* ── NAV ── */
+#nav{flex-shrink:0;background:var(--bg2);border-top:1px solid var(--bd);display:flex}
+.navbtn{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 7px;cursor:pointer;color:var(--cream4);font-family:var(--M);font-size:8px;letter-spacing:.5px;position:relative;transition:color .15s}
+.navbtn.on{color:var(--gold)}
+.navbtn.on::after{content:'';position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--gold);border-radius:0 0 2px 2px}
+.nav-icon{font-size:17px;line-height:1}
+
+/* ── SCROLL AREA ── */
+#content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+#content::-webkit-scrollbar{width:3px}
+#content::-webkit-scrollbar-thumb{background:var(--bg4)}
+.view{display:none}.view.on{display:block}
+
+/* ── SEARCH OVERLAY ── */
+#srch-layer{position:fixed;inset:0;z-index:600;background:var(--bg);display:none;flex-direction:column;max-width:480px;margin:0 auto}
+#srch-layer.open{display:flex}
+.sl-head{padding:10px 12px;background:var(--bg2);border-bottom:1px solid var(--bd);display:flex;gap:8px;align-items:center}
+.sl-field{flex:1;background:var(--bg3);border:1px solid var(--bd);border-radius:4px;display:flex;align-items:center;gap:8px;padding:0 10px}
+.sl-field span{color:var(--cream4);font-size:13px}
+#sl-inp{flex:1;background:none;border:none;color:var(--cream);font-family:var(--B);font-size:13px;padding:9px 0;outline:none}
+#sl-inp::placeholder{color:var(--cream4);font-size:11px}
+.sl-done{background:none;border:none;color:var(--gold);font-family:var(--B);font-size:13px;font-weight:500;cursor:pointer}
+.sl-res{flex:1;overflow-y:auto;padding:10px 12px}
+.sl-res::-webkit-scrollbar{display:none}
+.sl-item{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:10px 12px;margin-bottom:6px;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.sl-item:active{transform:scale(.98)}
+.sl-icon{width:34px;height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sl-name{font-family:var(--H);font-size:15px;font-weight:700;line-height:1.2}
+.sl-desc{font-size:11px;color:var(--cream3);margin-top:2px;line-height:1.4}
+.sl-tag{font-family:var(--M);font-size:8px;padding:1px 5px;border-radius:2px;margin-top:3px;display:inline-block}
+.sl-empty{text-align:center;padding:50px 20px;color:var(--cream4);font-size:12px;line-height:2.2}
+
+/* ── SHARED ── */
+.sec-hed{padding:12px 12px 0;display:flex;justify-content:space-between;align-items:baseline}
+.sec-hed-title{font-family:var(--H);font-style:italic;font-size:20px;color:var(--gold)}
+.sec-hed-sub{font-family:var(--M);font-size:9px;color:var(--cream4)}
+.sl-head-label{font-family:var(--M);font-size:9px;color:var(--cream4);letter-spacing:1.5px;padding:10px 12px 4px;display:flex;align-items:center;gap:8px}
+.sl-head-label::after{content:'';flex:1;height:1px;background:var(--bd)}
+.pill-row{display:flex;flex-wrap:wrap;gap:4px;padding:0 12px 10px;overflow-x:auto;scrollbar-width:none}
+.pill-row::-webkit-scrollbar{display:none}
+.pill{font-family:var(--M);font-size:10px;padding:4px 12px;border-radius:20px;cursor:pointer;white-space:nowrap;border:1px solid var(--bd);color:var(--cream4);background:var(--bg2);transition:all .15s;flex-shrink:0}
+.pill.active-all{background:var(--gold3);color:var(--gold);border-color:var(--bd2)}
+.pill.active-common{background:rgba(255,255,255,.06);color:var(--cream2);border-color:rgba(255,255,255,.2)}
+.pill.active-uncommon{background:var(--blue2);color:var(--blue);border-color:rgba(41,128,185,.35)}
+.pill.active-rare{background:var(--red2);color:var(--red);border-color:rgba(192,57,43,.4)}
+.pill.active-legendary{background:var(--gold3);color:var(--gold);border-color:var(--bd2)}
+.pill.active-tarot{background:var(--purple2);color:var(--purple);border-color:rgba(142,68,173,.35)}
+.pill.active-planet{background:var(--blue2);color:var(--blue);border-color:rgba(41,128,185,.35)}
+.pill.active-spectral{background:var(--green2);color:var(--green);border-color:rgba(39,174,96,.35)}
+.r-badge{font-family:var(--M);font-size:8px;padding:1px 5px;border-radius:2px;display:inline-block}
+.rc{background:rgba(255,255,255,.06);color:var(--cream3);border:1px solid rgba(255,255,255,.15)}
+.ru{background:var(--blue2);color:var(--blue);border:1px solid rgba(41,128,185,.3)}
+.rr{background:var(--red2);color:var(--red);border:1px solid rgba(192,57,43,.35)}
+.rl{background:var(--gold3);color:var(--gold);border:1px solid rgba(212,168,67,.35)}
+
+/* ── GUIDE ── */
+.guide-wrap{padding:12px}
+.score-formula{background:var(--bg2);border:1px solid var(--bd2);border-radius:8px;padding:14px;margin-bottom:10px}
+.sf-title{font-family:var(--H);font-style:italic;font-size:17px;color:var(--gold);margin-bottom:8px}
+.sf-eq{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.sf-chip{font-family:var(--M);font-size:12px;font-weight:500;padding:5px 12px;border-radius:5px}
+.chips-chip{background:var(--blue2);color:var(--blue);border:1px solid rgba(41,128,185,.35)}
+.op{color:var(--cream4);font-size:16px}
+.mult-chip{background:var(--red2);color:var(--red);border:1px solid rgba(192,57,43,.35)}
+.score-chip{background:var(--gold3);color:var(--gold);border:1px solid var(--bd2)}
+.sf-rule{font-size:11px;color:var(--cream3);line-height:1.6;padding:4px 0;border-bottom:1px solid var(--bd);display:flex;gap:8px}
+.sf-rule:last-child{border:none}
+.sf-rule::before{content:'♦';color:var(--gold);font-size:9px;flex-shrink:0;margin-top:3px}
+.gcards{display:flex;flex-direction:column;gap:7px}
+.gcard{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;overflow:hidden}
+.gcard-head{padding:12px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.gcard-n{font-family:var(--H);font-size:16px;font-weight:700;color:var(--cream);flex:1}
+.gcard-num{font-family:var(--H);font-style:italic;font-size:26px;color:var(--gold);opacity:.35;line-height:1;min-width:28px}
+.gcard-arr{color:var(--gold);font-size:15px;transition:transform .2s;flex-shrink:0}
+.gcard-arr.open{transform:rotate(90deg)}
+.gcard-body{padding:0 12px 12px;display:none}
+.gcard-body.open{display:block}
+.grule{font-size:12px;color:var(--cream3);line-height:1.65;padding:5px 0;border-bottom:1px solid var(--bd);display:flex;gap:8px}
+.grule:last-child{border:none}
+.grule::before{content:'→';color:var(--gold);flex-shrink:0}
+
+/* ── HANDS ── */
+.hands-list{padding:12px}
+.hand-row{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s}
+.hand-row:active{transform:scale(.98)}
+.hr-rank{font-family:var(--M);font-size:10px;color:var(--cream4);min-width:20px}
+.hr-info{flex:1}
+.hr-name{font-family:var(--H);font-size:16px;font-weight:700;color:var(--cream);line-height:1.2}
+.hr-ex{font-size:10px;color:var(--cream4);margin-top:1px}
+.hr-chips{font-family:var(--M);font-size:11px;background:var(--blue2);color:var(--blue);padding:2px 6px;border-radius:3px}
+.hr-mult{font-family:var(--M);font-size:11px;background:var(--red2);color:var(--red);padding:2px 6px;border-radius:3px}
+
+/* ── JOKERS ── */
+.jlist{padding:0 12px 12px}
+.jcard{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;margin-bottom:6px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.jcard:active{transform:scale(.99)}
+.jcard-top{padding:10px 12px 8px;display:flex;gap:10px;align-items:flex-start}
+.jcard-ico{width:38px;height:38px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.jcard-info{flex:1;min-width:0}
+.jcard-name{font-family:var(--H);font-size:16px;font-weight:700;color:var(--cream);line-height:1.2;margin-bottom:2px}
+.jcard-eff{font-size:12px;color:var(--cream3);line-height:1.45}
+.jcard-meta{display:flex;align-items:center;gap:5px;margin-top:5px;flex-wrap:wrap}
+.tier-badge{font-family:var(--M);font-size:8px;padding:1px 6px;border-radius:2px}
+.ts{background:rgba(212,168,67,.12);color:var(--gold);border:1px solid rgba(212,168,67,.3)}
+.ta{background:var(--red2);color:var(--red);border:1px solid rgba(192,57,43,.3)}
+.tb{background:var(--blue2);color:var(--blue);border:1px solid rgba(41,128,185,.3)}
+.tc{background:rgba(255,255,255,.04);color:var(--cream4);border:1px solid var(--bd)}
+.jcard-expand{display:none;padding:0 12px 10px;border-top:1px solid var(--bd);margin-top:4px}
+.jcard-expand.open{display:block;padding-top:8px}
+.je-tip{font-size:11px;color:var(--cream3);line-height:1.55;display:flex;gap:6px;margin-bottom:4px}
+.je-tip::before{content:'💡';font-size:10px;flex-shrink:0}
+.je-syn{font-size:11px;color:var(--cream4);line-height:1.55;display:flex;gap:6px}
+.je-syn::before{content:'⚡';font-size:10px;flex-shrink:0}
+
+/* ── CONSUMABLES ── */
+.clist{padding:0 12px 12px}
+.ccard{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;margin-bottom:6px;padding:10px 12px;cursor:pointer}
+.ccard:active{transform:scale(.98)}
+.cc-row{display:flex;gap:10px;align-items:flex-start}
+.cc-ico{width:34px;height:34px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.cc-info{flex:1}
+.cc-name{font-family:var(--H);font-size:15px;font-weight:700;color:var(--cream);line-height:1.2;margin-bottom:2px}
+.cc-eff{font-size:12px;color:var(--cream3);line-height:1.5}
+.cc-tip{display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);font-size:11px;color:var(--cream3);line-height:1.55}
+.cc-tip.open{display:block}
+.cc-warn{margin-top:4px;font-size:10px;color:var(--red);font-family:var(--M)}
+
+/* ── BOSSES ── */
+.blist{padding:0 12px 12px}
+.bcard{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;margin-bottom:6px;overflow:hidden;cursor:pointer}
+.bcard:active{transform:scale(.98)}
+.bbar{height:3px}
+.bcard-body{padding:10px 12px 8px}
+.bc-row{display:flex;gap:10px;align-items:flex-start}
+.bc-icon{font-size:22px;min-width:30px}
+.bc-info{flex:1}
+.bc-name{font-family:var(--H);font-size:16px;font-weight:700;color:var(--cream);line-height:1.2}
+.bc-eff{font-size:12px;color:var(--cream3);line-height:1.5;margin-top:2px}
+.bc-detail{display:none;padding-top:8px;margin-top:8px;border-top:1px solid var(--bd)}
+.bc-detail.open{display:block}
+.bc-counter{font-size:11px;color:var(--cream3);line-height:1.55;display:flex;gap:6px;margin-bottom:4px}
+.bc-counter::before{content:'🛡';font-size:10px;flex-shrink:0}
+.bc-diff{font-family:var(--M);font-size:9px;padding:2px 6px;border-radius:2px;margin-top:4px;display:inline-block}
+.diff-e{background:var(--green2);color:var(--green);border:1px solid rgba(39,174,96,.3)}
+.diff-m{background:rgba(230,126,34,.15);color:#e67e22;border:1px solid rgba(230,126,34,.3)}
+.diff-h{background:var(--red2);color:var(--red);border:1px solid rgba(192,57,43,.35)}
+.showdown-tag{font-family:var(--M);font-size:8px;color:var(--gold);background:var(--gold3);padding:1px 5px;border-radius:2px;vertical-align:middle;margin-left:4px}
+
+/* ── BOTTOM SHEET ── */
+#sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:700;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(3px)}
+#sheet-bg.on{opacity:1;pointer-events:all}
+#sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;background:var(--bg2);border-top:1px solid var(--bd2);border-radius:12px 12px 0 0;z-index:701;transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#sheet.on{transform:translateX(-50%) translateY(0)}
+#sheet::-webkit-scrollbar{width:2px}
+#sheet::-webkit-scrollbar-thumb{background:var(--bg4)}
+.sh-handle{width:36px;height:3px;background:var(--bg4);border-radius:2px;margin:10px auto 2px}
+.sh-head{padding:8px 14px 10px;border-bottom:1px solid var(--bd)}
+.sh-title{font-family:var(--H);font-style:italic;font-size:21px;color:var(--gold)}
+.sh-sub{font-size:11px;color:var(--cream4);margin-top:2px}
+.sh-body{padding:14px}
+.sh-sec-label{font-family:var(--M);font-size:9px;color:var(--cream4);letter-spacing:1.5px;padding-bottom:5px;display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.sh-sec-label::after{content:'';flex:1;height:1px;background:var(--bd)}
+.sh-rule{font-size:12px;color:var(--cream3);line-height:1.65;padding:5px 0;border-bottom:1px solid var(--bd);display:flex;gap:8px}
+.sh-rule:last-child{border:none}
+.sh-rule::before{content:'♦';color:var(--gold);font-size:9px;flex-shrink:0;margin-top:3px}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div class="hdr-row">
+    <div class="logo-wrap">
+      <span class="logo-title">Balatro</span>
+      <span class="logo-sub">COMPANION</span>
+    </div>
+    <button class="srch-btn" onclick="openSearch()">🔍</button>
+  </div>
+</div>
+
+<!-- SEARCH OVERLAY -->
+<div id="srch-layer">
+  <div class="sl-head">
+    <div class="sl-field">
+      <span>🔍</span>
+      <input id="sl-inp" type="text" placeholder="Search jokers, cards, boss blinds…" oninput="doSearch()" autocomplete="off" spellcheck="false">
+    </div>
+    <button class="sl-done" onclick="closeSearch()">Done</button>
+  </div>
+  <div class="sl-res" id="sl-res">
+    <div class="sl-empty">Search for any joker, card,<br>boss blind, or scoring rule</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div id="content">
+
+<!-- ── GUIDE ── -->
+<div class="view on" id="v-guide">
+  <div class="guide-wrap">
+    <div class="score-formula">
+      <div class="sf-title">How Scoring Works</div>
+      <div class="sf-eq">
+        <span class="sf-chip chips-chip">Chips</span>
+        <span class="op">×</span>
+        <span class="sf-chip mult-chip">Mult</span>
+        <span class="op">=</span>
+        <span class="sf-chip score-chip">Your Score</span>
+      </div>
+      <div class="sf-rule">Every hand has base Chips and Mult. Cards you play add chips. Jokers add chips, mult, or both.</div>
+      <div class="sf-rule">+Mult adds to your multiplier. ×Mult MULTIPLIES it — always put ×Mult jokers on the RIGHT.</div>
+      <div class="sf-rule">Example: 80 chips × 4 mult = 320. Add a ×3 joker on the right: 80 × 4 × 3 = 960!</div>
+      <div class="sf-rule">You need to beat the Blind's chip requirement. Higher antes need exponentially bigger scores.</div>
+    </div>
+    <div class="gcards" id="guide-cards"></div>
+  </div>
+</div>
+
+<!-- ── HANDS ── -->
+<div class="view" id="v-hands">
+  <div class="sec-hed">
+    <span class="sec-hed-title">Poker Hands</span>
+    <span class="sec-hed-sub">Tap for strategy tips</span>
+  </div>
+  <div class="hands-list" id="hands-list"></div>
+</div>
+
+<!-- ── JOKERS ── -->
+<div class="view" id="v-jokers">
+  <div class="sec-hed" style="padding-bottom:8px">
+    <span class="sec-hed-title">Jokers</span>
+    <span class="sec-hed-sub" id="j-count"></span>
+  </div>
+  <div class="pill-row" id="rarity-pills"></div>
+  <div class="jlist" id="jlist"></div>
+</div>
+
+<!-- ── CARDS ── -->
+<div class="view" id="v-cards">
+  <div class="sec-hed" style="padding-bottom:8px">
+    <span class="sec-hed-title">Cards & Consumables</span>
+  </div>
+  <div class="pill-row" id="card-pills"></div>
+  <div class="clist" id="clist"></div>
+</div>
+
+<!-- ── BOSSES ── -->
+<div class="view" id="v-bosses">
+  <div class="sec-hed" style="padding-bottom:8px">
+    <span class="sec-hed-title">Boss Blinds</span>
+    <span class="sec-hed-sub">Tap to see counters</span>
+  </div>
+  <div class="blist" id="blist"></div>
+</div>
+
+</div><!-- /content -->
+
+<!-- BOTTOM SHEET (hand detail) -->
+<div id="sheet-bg" onclick="closeSheet()"></div>
+<div id="sheet">
+  <div class="sh-handle"></div>
+  <div class="sh-head">
+    <div class="sh-title" id="sh-title"></div>
+    <div class="sh-sub" id="sh-sub"></div>
+  </div>
+  <div class="sh-body" id="sh-body"></div>
+</div>
+
+<div id="nav">
+  <button class="navbtn on" onclick="setView('guide',this)"><div class="nav-icon">📖</div>GUIDE</button>
+  <button class="navbtn" onclick="setView('hands',this)"><div class="nav-icon">🃏</div>HANDS</button>
+  <button class="navbtn" onclick="setView('jokers',this)"><div class="nav-icon">🎭</div>JOKERS</button>
+  <button class="navbtn" onclick="setView('cards',this)"><div class="nav-icon">✨</div>CARDS</button>
+  <button class="navbtn" onclick="setView('bosses',this)"><div class="nav-icon">💀</div>BOSSES</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════
+
+const GUIDE_SECTIONS = [
+  {n:'The Structure of a Run',rules:[
+    'Each run has 8 Antes. Every Ante has 3 rounds: Small Blind → Big Blind → Boss Blind.',
+    'You can SKIP Small and Big Blinds to earn a Tag reward (free jokers, money, packs). You CANNOT skip Boss Blinds.',
+    'After each round you visit the Shop — spend money on Jokers, cards, Vouchers, and Booster Packs.',
+    'You start with 4 hands and 3 discards per round. Run out of hands without meeting the score and you lose.',
+    'Extra hands become $1 each at end of a round — beat the blind early and bank the rest.',
+  ]},
+  {n:'Jokers Are Everything',rules:[
+    'You can hold up to 5 Jokers. They are the engine of every run — aim for at least 2 before the first Boss Blind.',
+    'Joker ORDER matters. Put +Chips and +Mult jokers on the LEFT. Put ×Mult jokers on the RIGHT.',
+    'Commit to a strategy early. If you\'re building Flushes, grab Flush jokers. Don\'t dilute your build.',
+    'Sell jokers that no longer fit. A joker that doesn\'t help is worth more as cash for a better one.',
+    'Editions matter: Foil (+50 chips), Holographic (+10 Mult), Polychrome (×1.5 Mult). Polychrome is almost always the best.',
+  ]},
+  {n:'Build Around One Hand Type',rules:[
+    'The best runs are FOCUSED. Pick one hand type and build everything around it from Ante 1.',
+    'Flush builds are the best for beginners — consistent, easy to set up, many good jokers.',
+    'Pair / Two Pair builds are very forgiving. Pairs appear all the time and many common jokers support them.',
+    'Use Planet cards to level up your chosen hand — each level permanently increases the base chips and mult for that hand this run.',
+    'Switching strategies mid-run usually fails. Commit early and keep pushing.',
+  ]},
+  {n:'Discards Are a Resource',rules:[
+    'You get 3 discards per round. Use them to fish for the cards you need rather than playing bad hands.',
+    'Some jokers REWARD discards (Faceless Joker, Green Joker, Burglar). If you have those, use all your discards.',
+    'Don\'t discard useful cards! If chasing a Flush, only discard the off-suit cards.',
+    'If you\'re way ahead on score, stop playing — leftover hands = $1 each at the end.',
+  ]},
+  {n:'Tarot & Planet Cards',rules:[
+    'Tarot cards modify your playing cards (add enhancements, change suits, remove cards) or give money/hands.',
+    'Planet cards level up a specific poker hand. Always buy planets for the hand type you\'re building around.',
+    'Steel card enhancement (from The Chariot tarot): ×1.5 Mult while held in hand. Multiple Steel cards stack! Very powerful.',
+    'Mult card enhancement (from The Empress): +4 Mult every time it scores. Apply to cards you always play.',
+    'The Fool tarot copies the last Tarot or Planet you used — save it for right after a great card.',
+  ]},
+  {n:'The Shop — What to Buy',rules:[
+    'Rerolls start at $1 and go up $1 each time. Early rerolls are cheap — use them to find key jokers.',
+    'Save money for interest: you earn $1 per $5 saved, up to $5/round. $20 saved = +$4 every round.',
+    'Vouchers are permanent upgrades. Overstock (extra shop slot), Reroll Surplus (cheaper rerolls), Clearance Sale (20% off) are great early.',
+    'Booster Packs are often better value than buying single cards — especially Celestial packs when you need Planet cards.',
+    'Don\'t buy every joker you see. A joker that doesn\'t fit costs money AND a slot. Stay focused.',
+  ]},
+  {n:'Common Beginner Mistakes',rules:[
+    '❌ Buying jokers with no strategy — every joker should have a clear purpose.',
+    '❌ Never skipping blinds — skipping Small/Big Blinds for Tags is often the right call.',
+    '❌ Spending all your money every round — save for interest and big late-game purchases.',
+    '❌ Playing every hand to the end — beat the score requirement early and stop to save hands for money.',
+    '❌ Holding onto weak jokers — sell them and fund better ones. Don\'t be sentimental.',
+    '❌ Ignoring Boss Blind effects — always read what the Boss does before you start playing.',
+  ]},
+];
+
+const HANDS = [
+  {n:'Royal Flush',r:1,chips:100,mult:8,ex:'A♠ K♠ Q♠ J♠ 10♠',desc:'Five consecutive cards of the same suit, Ace high. The rarest possible hand.',tips:['Almost impossible to build around. If it happens naturally, enjoy it.','Flush jokers still apply — if you\'re playing Flush strategy, this is a bonus.','Planet card: Neptune levels Flushes (this counts). Eris levels Flush Five (different).']},
+  {n:'Flush Five',r:2,chips:160,mult:16,ex:'A♣ A♣ A♣ A♣ A♣',desc:'Five cards of the same rank AND same suit. A secret hand — only unlocked after you play it.',tips:['Nearly impossible without using Wild Cards or deck manipulation.','Incredibly powerful if you can hit it. Planet X levels Five of a Kind, Eris levels Flush Five.','Requires matching suits too — The World tarot or Wild Card enhancements help.']},
+  {n:'Flush House',r:3,chips:140,mult:14,ex:'K♠ K♠ K♠ J♠ J♠',desc:'A Full House where all five cards share the same suit. Secret hand.',tips:['Full House builds using a single suit can naturally hit this.','Planet card: Ceres levels Flush House.','Requires deck trimming to one suit alongside Full House Jokers.']},
+  {n:'Five of a Kind',r:4,chips:120,mult:12,ex:'K♣ K♥ K♦ K♠ K+',desc:'Five cards of the same rank. Requires Wild Cards or deck manipulation.',tips:['Wild Card enhancements (from The Lovers tarot) make this achievable.','Very powerful mid-game. Jokers like Triboulet reward face cards enormously here.','Planet card: Planet X levels this hand.']},
+  {n:'Straight Flush',r:5,chips:100,mult:8,ex:'9♦ 8♦ 7♦ 6♦ 5♦',desc:'Five consecutive cards of the same suit.',tips:['High risk, high reward. Combines the challenge of Straights and Flushes.','Reduce deck size to make both conditions appear more consistently.','Good with Straight AND Flush boosting jokers stacked together.']},
+  {n:'Four of a Kind',r:6,chips:60,mult:7,ex:'Q♠ Q♥ Q♦ Q♣ + any',desc:'Four cards of the same rank plus any fifth card.',tips:['Solid mid-game hand. Consistent with a normal deck.','Pair jokers also activate here since the hand contains pairs.','Watch out for Boss Blinds that debuff specific suits.']},
+  {n:'Full House',r:7,chips:40,mult:4,ex:'J♠ J♥ J♦ 8♣ 8♥',desc:'Three of a kind plus a pair.',tips:['Very consistent and strong mid-game. Appears frequently.','Planet card: Saturn levels Full House — buy it whenever you see it.','Jokers that reward both pairs AND three-of-a-kind are doubly active here.']},
+  {n:'Flush',r:8,chips:35,mult:4,ex:'A♦ J♦ 8♦ 5♦ 3♦',desc:'Five cards of the same suit, any ranks.',tips:['BEST FOR BEGINNERS. Trim your deck to 2-3 suits and Flushes appear constantly.','Use The World tarot to convert off-suit cards. The Hanged Man to remove them.','Planet card: Neptune. Stack it every time you see it.','Key joker: Smeared Joker makes Hearts/Diamonds count as the same suit.']},
+  {n:'Straight',r:9,chips:30,mult:4,ex:'10♠ 9♥ 8♦ 7♣ 6♥',desc:'Five consecutive ranks, any suits.',tips:['Needs consecutive ranks — any gap breaks it. Aces can be high or low.','Four Fingers joker lets you play Straights with only 4 cards — much easier.','Planet card: Venus levels Straights. Shortcut joker connects gaps.']},
+  {n:'Three of a Kind',r:10,chips:30,mult:3,ex:'7♠ 7♥ 7♦ + any 2',desc:'Three cards of the same rank.',tips:['Good early-mid game. Transitions naturally into Full House strategy.','Planet card: Mars levels Three of a Kind.','Many common jokers that boost pairs also boost this hand.']},
+  {n:'Two Pair',r:11,chips:20,mult:2,ex:'A♠ A♥ K♣ K♦ + any',desc:'Two different pairs.',tips:['Strong early-game. Pairs appear all the time so Two Pair is very reliable.','Planet card: Uranus levels Two Pair.','Joker: Spare Trousers gains +2 Mult every time you play Two Pair — snowballs fast.']},
+  {n:'Pair',r:12,chips:10,mult:2,ex:'8♠ 8♥ + any 3',desc:'Two cards of the same rank.',tips:['Weakest scoring hand but very reliable early. Use to warm up snowball jokers.','Planet card: Mercury levels Pairs.','Can chain naturally into Two Pair and Full House as your deck develops.']},
+  {n:'High Card',r:13,chips:5,mult:1,ex:'Any 5 non-matching cards',desc:'No matching cards. The weakest base hand — but powerful with the right jokers.',tips:['Terrible on its own. But jokers like Campfire, Raised Fist, and Steel cards can make it S-tier.','Advanced strategy only — requires very specific joker combinations.','Planet card: Pluto levels High Card. Only worth buying in dedicated High Card builds.']},
+];
+
+const JOKERS = [
+  {n:'Joker',r:'common',ico:'🃏',e:'+4 Mult.',t:'Basic but reliable. Early game +4 Mult is never wasted.',s:'Pairs with anything.',tier:'b'},
+  {n:'Greedy Joker',r:'common',ico:'💎',e:'+3 Mult for each scored Diamond card.',t:'If playing a Diamond Flush, this adds up fast. 5 Diamond cards = +15 Mult.',s:'The World tarot + this = massive mult in Diamond Flush builds.',tier:'b'},
+  {n:'Lusty Joker',r:'common',ico:'♥️',e:'+3 Mult for each scored Heart card.',t:'Same as Greedy but for Hearts. Pick whichever suits your Flush build.',s:'Great with Heart Flush jokers.',tier:'b'},
+  {n:'Wrathful Joker',r:'common',ico:'♠️',e:'+3 Mult for each scored Spade card.',t:'Good for Spade Flush builds.',s:'Smeared Joker (Clubs count as Spades) doubles usefulness.',tier:'b'},
+  {n:'Gluttonous Joker',r:'common',ico:'♣️',e:'+3 Mult for each scored Club card.',t:'Club Flush support. Consistent if you\'ve trimmed your deck.',s:'Combine with Club-counting jokers.',tier:'b'},
+  {n:'Jolly Joker',r:'common',ico:'😄',e:'+8 Mult if played hand contains a Pair.',t:'Almost every strong hand contains a pair. Extremely reliable early-game mult.',s:'Full House, Two Pair, Four of a Kind all trigger this.',tier:'b'},
+  {n:'Zany Joker',r:'common',ico:'😜',e:'+12 Mult if hand contains Three of a Kind.',t:'More conditional than Jolly but bigger. Use in Three of a Kind and Full House builds.',s:'Planet Mars + Zany = strong engine.',tier:'b'},
+  {n:'Mad Joker',r:'common',ico:'😡',e:'+20 Mult if hand contains Two Pair.',t:'Two Pair is surprisingly common — this is a lot of Mult.',s:'Spare Trousers + Mad Joker = huge Two Pair rewards.',tier:'b'},
+  {n:'Crazy Joker',r:'common',ico:'🤪',e:'+12 Mult if hand contains a Straight.',t:'Straight support. Pair with Venus planets and the Shortcut joker for consistency.',s:'Shortcut + Crazy Joker + Saturn planet = reliable Straight engine.',tier:'b'},
+  {n:'Droll Joker',r:'common',ico:'😐',e:'+10 Mult if hand contains a Flush.',t:'Flush builds love this. Stacks with every other Flush bonus.',s:'Core Flush build joker. Stack with Neptune planets.',tier:'a'},
+  {n:'Sly Joker',r:'common',ico:'😏',e:'+50 Chips if hand contains a Pair.',t:'Big chips for Pair-based hands. Balances out mult-heavy builds.',s:'Jolly Joker (mult) + Sly Joker (chips) = balanced Pair build.',tier:'b'},
+  {n:'Wily Joker',r:'common',ico:'🤔',e:'+100 Chips if hand contains Three of a Kind.',t:'Large chips bonus for Three of a Kind hands.',s:'Combine with Zany Joker for chips + mult on three-of-a-kind.',tier:'b'},
+  {n:'Clever Joker',r:'common',ico:'🧐',e:'+80 Chips if hand contains Two Pair.',t:'Solid chips for Two Pair builds.',s:'Mad Joker (mult) + Clever Joker (chips) = well-rounded Two Pair.',tier:'b'},
+  {n:'Devious Joker',r:'common',ico:'😈',e:'+100 Chips if hand contains a Straight.',t:'Good chips for Straight builds alongside Crazy Joker.',s:'Crazy + Devious + Saturn planet = complete Straight build.',tier:'b'},
+  {n:'Crafty Joker',r:'common',ico:'🛠️',e:'+80 Chips if hand contains a Flush.',t:'More chips for Flush builds. Stack with Droll Joker for chips + mult.',s:'Droll + Crafty + Neptune = core Flush joker trio.',tier:'a'},
+  {n:'Half Joker',r:'common',ico:'½',e:'+20 Mult if played hand has 3 or fewer cards.',t:'Play only 3 cards at a time to activate consistently. Good for Pair and High Card strategies.',s:'Works well with jokers that reward specific low-card plays.',tier:'b'},
+  {n:'Jolly Joker (Stuntman)',r:'uncommon',ico:'🤸',e:'+250 Chips but -2 hand size (you draw 6 cards instead of 8).',t:'Massive chips but smaller hand. Best with hands that don\'t need many cards.',s:'Half Joker + Stuntman = high chips on small hand plays.',tier:'a'},
+  {n:'Abstract Joker',r:'common',ico:'🎨',e:'+3 Mult for each Joker owned.',t:'Gets better as you fill your Joker slots. 5 jokers = +15 Mult.',s:'Best late-game when all 5 slots are full.',tier:'b'},
+  {n:'Banner',r:'common',ico:'🚩',e:'+30 Chips per remaining Discard when hand is played.',t:'Hold your discards in reserve! With 3 discards saved = +90 free chips.',s:'Use discards sparingly — each saved one is worth +30 chips.',tier:'a'},
+  {n:'Supernova',r:'common',ico:'💫',e:'+1 Mult for each time this poker hand has been played this run.',t:'Gets stronger the more you play the same hand. Commit early and it snowballs.',s:'Combine with Planet cards — level the hand AND snowball the joker.',tier:'a'},
+  {n:'Raised Fist',r:'common',ico:'✊',e:'Adds double the rank of the lowest card held in hand to Mult.',t:'Keep a 2 in hand — doubles to +4 Mult passively. Free mult every round.',s:'Works passively while you play other cards. Always hold a 2.',tier:'b'},
+  {n:'Fibonacci',r:'uncommon',ico:'🐚',e:'+8 Mult when a 2, 3, 5, 8, or Ace is scored.',t:'Fibonacci numbers are easy to include. Aces, 2s, 3s, 5s, and 8s all trigger it.',s:'Ace-heavy builds love this. Easy consistent mult.',tier:'a'},
+  {n:'Scary Face',r:'common',ico:'😱',e:'+30 Chips for each scored face card (K, Q, J).',t:'Face cards score tons of chips. +90 if all three face cards score in one hand.',s:'Photograph (×2 on first face card) + Scary Face = powerful face card build.',tier:'b'},
+  {n:'Photograph',r:'common',ico:'📷',e:'First scored face card gives ×2 Mult.',t:'×2 is multiplicative — very powerful. Ensure a face card scores first.',s:'Sock and Buskin (retrigger face cards) + Photograph = first face card ×2, then more.',tier:'a'},
+  {n:'Sock and Buskin',r:'uncommon',ico:'🎭',e:'Retrigger all scored face cards.',t:'Face cards score TWICE. Combine with any joker that triggers on face cards.',s:'Smiley Face + Scary Face + Photograph + Sock and Buskin = dominant face card combo.',tier:'a'},
+  {n:'Spare Trousers',r:'uncommon',ico:'👖',e:'Gains +2 Mult permanently each time Two Pair is played.',t:'Snowball joker. Starts small, ends enormous. Play Two Pair every round.',s:'Mad Joker + Spare Trousers + Clever Joker = incredible Two Pair engine.',tier:'a'},
+  {n:'Campfire',r:'rare',ico:'🔥',e:'Gains ×0.25 Mult for each card sold. Resets after Boss Blind.',t:'Sell extra cards from packs to build massive multiplier before each boss.',s:'Buy Standard Packs, take cards you don\'t need, sell them to feed Campfire.',tier:'a'},
+  {n:'Vampire',r:'uncommon',ico:'🧛',e:'Gains ×0.1 Mult each time a card with an Enhancement is scored. Removes the Enhancement.',t:'Let it eat your Steel, Mult, and Glass cards for permanent joker mult.',s:'DNA + Vampire: duplicate an enhanced card before Vampire consumes it.',tier:'a'},
+  {n:'Baron',r:'rare',ico:'🎩',e:'Each King held in hand gives ×1.5 Mult.',t:'Multiple Kings in hand stack multiplicatively. 3 Kings in hand = ×1.5³ ≈ ×3.4!',s:'Triboulet (×2 on played Kings) + Baron (×1.5 per held King) = devastating.',tier:'a'},
+  {n:'Triboulet',r:'legendary',ico:'👑',e:'Played Kings and Queens each give ×2 Mult.',t:'Legendary Joker. Two Kings and Queens played = ×2 × ×2 × ×2 = ×8 mult!',s:'Baron + Triboulet + Sock and Buskin = one of the highest-scoring combos.',tier:'s'},
+  {n:'Cavendish',r:'uncommon',ico:'🍌',e:'×3 Mult. 1 in 1000 chance to self-destruct each round.',t:'×3 is massive and the destruction chance (0.1%) rarely fires. Basically free ×3 Mult.',s:'Stack ×Mult jokers together. Cavendish is one of the best unconditional multipliers.',tier:'s'},
+  {n:'Blueprint',r:'rare',ico:'📘',e:'Copies the effect of the Joker immediately to its right.',t:'Put your most powerful Joker to its right and Blueprint doubles that effect.',s:'Blueprint + Brainstorm = two jokers both copying your best effect.',tier:'s'},
+  {n:'Brainstorm',r:'rare',ico:'🧠',e:'Copies the effect of the leftmost Joker.',t:'Stack with Blueprint for mind-bending synergy. Two jokers both mimicking your best.',s:'Blueprint on the left, your best joker on the right, Brainstorm anywhere.',tier:'s'},
+  {n:'Shoot the Moon',r:'common',ico:'🌙',e:'+13 Mult for each Queen held in hand (not played).',t:'Hold Queens — don\'t play them! Four Queens held = +52 free Mult every hand.',s:'Baron (held Kings ×1.5) + Shoot the Moon (held Queens +13 each) = huge passive mult.',tier:'a'},
+  {n:'Blackboard',r:'uncommon',ico:'🖊️',e:'×3 Mult if all cards held in hand are Spades or Clubs (black suits).',t:'Convert your deck to black suits using tarots. ×3 mult if every card in hand is black.',s:'Smeared Joker (Hearts = Spades, Diamonds = Clubs) makes this far easier.',tier:'a'},
+  {n:'Throwback',r:'uncommon',ico:'⏮️',e:'×0.25 Mult for each Blind skipped this run.',t:'Skip every Small and Big Blind you can. 8 skips = ×3 Mult from one joker!',s:'Combine with any other ×Mult sources. Easy to build around.',tier:'a'},
+  {n:'Ancient Joker',r:'rare',ico:'🏺',e:'Each scored card of a random suit (changes each round) gives ×1.5 Mult.',t:'5 cards of the active suit = ×1.5⁵ ≈ ×7.6! The suit changes but the power is huge.',s:'Smeared Joker (fewer suits) means more of your deck hits the active suit.',tier:'a'},
+  {n:'Mr. Bones',r:'uncommon',ico:'💀',e:'Prevents death if chips scored are 25%+ of required. Then self-destructs.',t:'Emergency safety net. Can save a run you\'d otherwise lose. Keep it.',s:'Don\'t sell this. Save it for the moment you desperately need it.',tier:'a'},
+  {n:'Space Joker',r:'uncommon',ico:'🚀',e:'1 in 4 chance to level up the poker hand just played.',t:'Free random planet card effects. Great for levelling your main hand type faster.',s:'Any focused hand-type build loves this. Free upgrades add up.',tier:'a'},
+  {n:'Perkeo',r:'legendary',ico:'🤵',e:'Creates a Negative copy of a random consumable in your hand at end of each shop.',t:'Free Negative consumable every shop = constant free cards. One of the strongest passive jokers.',s:'Cartomancer (Tarot when blind selected) + Perkeo = endless free card generation.',tier:'s'},
+  {n:'DNA',r:'rare',ico:'🧬',e:'If first hand of round is one card, permanently adds a copy of that card to your deck.',t:'Play one enhanced card alone to duplicate it forever. Extremely powerful with Steel/Mult cards.',s:'Vampire + DNA: copy the enhanced card before Vampire eats the enhancement.',tier:'a'},
+  {n:'Hologram',r:'uncommon',ico:'✨',e:'Gains ×0.25 Mult every time a playing card is added to your deck.',t:'Every card from every pack grows this joker. Buy lots of Standard Packs.',s:'DNA + Hologram: duplicate cards to grow both your deck and Hologram mult.',tier:'a'},
+  {n:'Bootstraps',r:'uncommon',ico:'🥾',e:'+2 Mult for every $5 you have.',t:'Hold money. $25 saved = +10 Mult passively every hand.',s:'Golden Joker (earns $4/round) + Bootstraps = money creates mult.',tier:'b'},
+  {n:'Golden Joker',r:'common',ico:'🌟',e:'Earn $4 at end of each round.',t:'Reliable income every round. More money = more jokers = better run.',s:'Bootstraps + Golden Joker = money loop that generates mult.',tier:'b'},
+  {n:'Acrobat',r:'uncommon',ico:'🤸',e:'×3 Mult on the final hand played this round.',t:'If you can beat the blind in one hand, this fires every time. Build for one-shot plays.',s:'Banner (chips per unused discard) + Acrobat = save everything for one giant hand.',tier:'b'},
+  {n:'Egg',r:'common',ico:'🥚',e:'Gains $3 at end of each round.',t:'Passive income every round. Good for interest and late-game purchasing power.',s:'Combine with Bootstraps for the money→mult loop.',tier:'b'},
+  {n:'Hack',r:'uncommon',ico:'💻',e:'Retrigger 2s, 3s, 4s, and 5s when played.',t:'Low-value number cards score twice. Great in builds that use these ranks.',s:'Fibonacci (scores on 2,3,5) + Hack (retrigger 2,3,5) = double triggers.',tier:'b'},
+  {n:'Green Joker',r:'common',ico:'💚',e:'+1 Mult per hand played, -1 Mult per discard used.',t:'Play hands and don\'t discard. Rewards conservative, patient play.',s:'Conflicts with discard-hungry jokers. Choose one approach.',tier:'b'},
+  {n:'Ice Cream',r:'common',ico:'🍦',e:'+100 Chips, loses 5 chips per hand played.',t:'Strong early, fades over time. Great for the first few rounds, sell before it runs out.',s:'Use early, replace once it degrades past usefulness.',tier:'b'},
+  {n:'Burglar',r:'uncommon',ico:'🦹',e:'When Blind is entered: +3 Hands, lose all Discards.',t:'More hands means more chances to score big. Losing discards hurts less than you think.',s:'Green Joker (mult per hand) + Burglar (extra hands) = score more, snowball faster.',tier:'b'},
+];
+
+const TAROTS = [
+  {n:'The Fool',ico:'🃏',e:'Creates the last Tarot or Planet card used.',t:'Use immediately after a powerful Tarot or Planet to copy it. Always keep a consumable slot open first.',w:''},
+  {n:'The Magician',ico:'✨',e:'Enhances 2 selected cards to Lucky Cards (1/5: +20 Mult, 1/15: +$20).',t:'Lucky Cards have variance but the upside is huge. Great in builds where you score cards repeatedly.',w:''},
+  {n:'The High Priestess',ico:'🌙',e:'Creates 2 random Planet cards.',t:'Free planets for any hand type. Use when your consumable slots are empty.',w:''},
+  {n:'The Empress',ico:'👑',e:'Enhances 2 selected cards to Mult Cards (+4 Mult when scored).',t:'Permanent +4 Mult per card, every hand. Apply to cards you always play. Stack 4-5 Mult cards for massive free mult.',w:''},
+  {n:'The Emperor',ico:'⚜️',e:'Creates 2 random Tarot cards.',t:'Free tarots. Use with empty consumable slots to chain into more value.',w:''},
+  {n:'The Hierophant',ico:'🏛️',e:'Enhances 2 selected cards to Bonus Cards (+30 Chips when scored).',t:'Great for chips. Apply to cards you always score — Aces, face cards, key hand cards.',w:''},
+  {n:'The Lovers',ico:'💕',e:'Enhances 1 selected card to a Wild Card (counts as all suits).',t:'Wild Cards count as Hearts, Spades, Clubs, AND Diamonds at once. Essential for multi-suit Flush builds.',w:'Wild Cards are debuffed by Boss Blinds that target a specific suit — be careful!'},
+  {n:'The Chariot',ico:'🏇',e:'Enhances 1 selected card to a Steel Card (×1.5 Mult while held in hand).',t:'Steel cards give ×1.5 Mult EVERY hand as long as they\'re held in hand. Multiple Steel cards MULTIPLY together. 3 Steel cards = ×3.375!',w:'Must remain in hand each round — don\'t accidentally play your Steel cards.'},
+  {n:'Justice',ico:'⚖️',e:'Enhances 1 selected card to a Glass Card (×2 Mult when scored, 25% chance to break).',t:'×2 when scored is enormous. Glass cards sometimes break but the payoff is worth it.',w:'25% destruction chance per score. Don\'t apply to a card you can\'t afford to lose.'},
+  {n:'The Hermit',ico:'🏔️',e:'Doubles your current money (up to $20 extra).',t:'Use when you have $20 saved for the maximum +$20. Use in shop after buying everything you need.',w:'Capped at $20 extra. Use at exactly $20 saved for best value.'},
+  {n:'The Wheel of Fortune',ico:'🎡',e:'1 in 4 chance to add Foil, Holographic, or Polychrome to a random Joker.',t:'Free edition on a Joker! Polychrome (×1.5 Mult) is the best outcome.',w:''},
+  {n:'Strength',ico:'💪',e:'Increases rank of 2 selected cards by 1 (2→3→…→A→2).',t:'Upgrade low-value cards to higher ranks. Turn multiple 2s into Aces over time.',w:''},
+  {n:'The Hanged Man',ico:'🙃',e:'Destroys 2 selected cards.',t:'Remove off-suit or useless cards. Smaller deck = more consistent draws. Core of Flush builds.',w:'Permanent — these cards are gone forever. Choose carefully.'},
+  {n:'Death',ico:'💀',e:'Select 2 cards — the left card transforms into the right card.',t:'Copy a powerful enhanced card (Steel, Mult, Glass) onto a weaker one.',w:''},
+  {n:'Temperance',ico:'⚗️',e:'Gives you money equal to total sell value of all your Jokers (max $50).',t:'Reads joker values without destroying them. Use with high-value jokers when you need cash.',w:''},
+  {n:'The Devil',ico:'😈',e:'Enhances 1 selected card to a Gold Card ($3 when scored).',t:'Gold cards earn $3 every time they score. Apply to cards you always play for passive income.',w:''},
+  {n:'The Tower',ico:'🗼',e:'Enhances 1 selected card to a Stone Card (+50 Chips when scored, no rank or suit).',t:'+50 chips every score is great — but Stone cards lose their rank and suit.',w:'Stone Cards cannot contribute to Straights, Flushes, Pairs, or any poker hand type.'},
+  {n:'The Star',ico:'⭐',e:'Converts 3 selected cards to Diamonds.',t:'Convert off-suit cards for Diamond Flush builds.',w:''},
+  {n:'The Moon',ico:'🌕',e:'Converts 3 selected cards to Clubs.',t:'Club Flush support.',w:''},
+  {n:'The Sun',ico:'☀️',e:'Converts 3 selected cards to Hearts.',t:'Heart Flush support.',w:''},
+  {n:'Judgement',ico:'🔔',e:'Creates a random Joker.',t:'Free Joker if you have a slot! Use when you need a joker and have an open slot.',w:''},
+  {n:'The World',ico:'🌍',e:'Converts 3 selected cards to Spades.',t:'Spade Flush support. Combine with Smeared Joker.',w:''},
+];
+
+const PLANETS = [
+  {n:'Mercury',ico:'🪨',hand:'Pair',e:'Levels up Pair: +15 Chips, +1 Mult per level.',t:'Stack this in Pair and Two Pair builds. Every level stacks permanently for the run.'},
+  {n:'Venus',ico:'🌸',hand:'Two Pair',e:'Levels up Two Pair: +20 Chips, +1 Mult per level.',t:'Core planet for Two Pair builds alongside Uranus. Buy every one you see.'},
+  {n:'Earth',ico:'🌍',hand:'Full House',e:'Levels up Full House: +25 Chips, +2 Mult per level.',t:'Strong +Mult per level. Full House builds should stack Earth aggressively.'},
+  {n:'Mars',ico:'🔴',hand:'Three of a Kind',e:'Levels up Three of a Kind: +20 Chips, +2 Mult per level.',t:'Great Mult gain. Three of a Kind is common — level it early.'},
+  {n:'Jupiter',ico:'🟠',hand:'Flush',e:'Levels up Flush: +15 Chips, +2 Mult per level.',t:'Wait — this might be Jupiter or Neptune depending on version. Either way, Flush planet = always buy.'},
+  {n:'Saturn',ico:'🪐',hand:'Straight',e:'Levels up Straight: +30 Chips, +3 Mult per level.',t:'Great Mult per level. Straight builds stack this hard.'},
+  {n:'Uranus',ico:'🔵',hand:'Two Pair',e:'Levels up Two Pair: +20 Chips, +1 Mult per level.',t:'Two Pair gets multiple planets — Venus and Uranus both level it. Fast scaling.'},
+  {n:'Neptune',ico:'💙',hand:'Flush',e:'Levels up Flush: +15 Chips, +2 Mult per level.',t:'The most important planet if running a Flush build. Buy it every single time you see it.'},
+  {n:'Pluto',ico:'🧊',hand:'High Card',e:'Levels up High Card: +10 Chips, +1 Mult per level.',t:'Only useful in dedicated High Card builds. Skip otherwise.'},
+  {n:'Planet X',ico:'🌌',hand:'Five of a Kind',e:'Levels up Five of a Kind: +35 Chips, +3 Mult per level. SECRET.',t:'Secret planet — only appears in the shop once you\'ve played Five of a Kind this run.'},
+  {n:'Ceres',ico:'⚪',hand:'Flush House',e:'Levels up Flush House: +40 Chips, +4 Mult per level. SECRET.',t:'Secret planet for Flush House. Very powerful if you\'re hitting this hand regularly.'},
+  {n:'Eris',ico:'🖤',hand:'Flush Five',e:'Levels up Flush Five: +50 Chips, +3 Mult per level. SECRET.',t:'Secret planet for the rarest hand in the game. Incredible if you can trigger Flush Five.'},
+];
+
+const SPECTRALS = [
+  {n:'Familiar',ico:'🐾',e:'Destroys 1 random card in your hand. Adds 3 random Enhanced face cards to your deck.',t:'Lose one, gain 3 powerful enhanced face cards. Almost always a great trade.',w:'Destruction is random — don\'t use when holding critical cards.'},
+  {n:'Grim',ico:'💀',e:'Destroys 1 random card in your hand. Adds 2 random Enhanced Aces to your deck.',t:'2 enhanced Aces for 1 random card. Aces are the best rank. Excellent value.',w:'Random destruction. Be careful with small decks.'},
+  {n:'Incantation',ico:'🔮',e:'Destroys 1 random card. Adds 4 random Enhanced numbered cards (2–10) to your deck.',t:'Good card generation. Enhanced number cards can be very powerful depending on the type.',w:'Random destruction as always.'},
+  {n:'Talisman',ico:'🏅',e:'Adds a Gold Seal to 1 selected card.',t:'Gold Seal earns $3 whenever that card is scored. Apply to a card you score every hand.',w:''},
+  {n:'Aura',ico:'✨',e:'Adds Foil, Holographic, or Polychrome to 1 selected playing card.',t:'Polychrome (×1.5 Mult per score) is the best outcome. Apply to cards that score every hand.',w:''},
+  {n:'Wraith',ico:'👻',e:'Creates a random Rare Joker. Sets your money to $0.',t:'Free Rare Joker is usually worth losing all your money. Use after buying everything in the shop.',w:'YOU LOSE ALL YOUR MONEY. Only use this when you\'re fine spending everything.'},
+  {n:'Sigil',ico:'🔯',e:'Converts all cards in your deck to a single random suit.',t:'Instant Flush build! Your whole deck becomes one suit. Combined with Flush jokers = massive.',w:'The suit is random. Wild Cards lose their multi-suit advantage.'},
+  {n:'Ouija',ico:'🌀',e:'Converts all cards in your deck to a single random rank.',t:'Every card the same rank = incredible for Five of a Kind builds. Very build-warping.',w:'The rank is random. Can be amazing or awkward depending on what you get.'},
+  {n:'Ectoplasm',ico:'🫥',e:'Adds Negative edition (+1 Joker slot) to 1 random Joker. Reduces hand size by 1 permanently.',t:'Getting 6 Joker slots is incredibly powerful. The hand size reduction is usually worth it.',w:'Permanent hand size reduction. Risky in small-hand builds.'},
+  {n:'Immolate',ico:'🔥',e:'Destroys 5 random cards from your hand. Gain $20.',t:'$20 for 5 random cards. Use when your deck has expendable low-value cards.',w:'5 random destructions — can destroy your best cards. Use carefully in small decks.'},
+  {n:'Cryptid',ico:'🦌',e:'Creates 2 copies of 1 selected playing card.',t:'Duplicate your best enhanced card. 2 extra Steel cards = ×1.5 × ×1.5 every hand. No downside.',w:''},
+  {n:'Deja Vu',ico:'🔄',e:'Adds a Red Seal to 1 selected playing card.',t:'Red Seal retriggers the card when scored. Put it on Steel cards for double ×1.5, or Mult cards for double +4.',w:''},
+  {n:'Hex',ico:'🌀',e:'Adds Polychrome to 1 random Joker. Destroys all non-Polychrome Jokers.',t:'Only use when you have one Joker or can afford to lose the rest. Free Polychrome (×1.5) on a joker.',w:'⚠ DESTROYS ALL NON-POLYCHROME JOKERS. Very risky. Use with extreme care.'},
+  {n:'Trance',ico:'💫',e:'Adds a Blue Seal to 1 selected card.',t:'Blue Seal creates a Planet card at end of round if held in hand. Free planets every round!',w:'The card must be in hand (not played) at end of round to generate the planet.'},
+  {n:'Medium',ico:'🔮',e:'Adds a Purple Seal to 1 selected card.',t:'Purple Seal creates a Tarot card when the card is discarded. Deliberately discard it each round for free Tarots.',w:'Must be discarded to trigger. Plan your discard around this card.'},
+  {n:'Cryptid (Deck)',ico:'🧬',e:'Creates 2 copies of 1 selected playing card.',t:'Same as above — duplicate your most powerful enhanced card for huge compounding value.',w:''},
+  {n:'The Soul',ico:'🌟',e:'Creates a Legendary Joker if a Joker slot is free.',t:'Free Legendary Joker! There are only 5 and they\'re all powerful. Save a slot before using.',w:'Requires an empty Joker slot. Sell a weak joker first if needed.'},
+  {n:'Black Hole',ico:'🕳️',e:'Upgrades every poker hand type by 1 level.',t:'ALL hands get a free planet level. No downside. Universally excellent — buy immediately every time.',w:''},
+];
+
+const BOSSES = [
+  {n:'The Hook',ico:'🪝',col:'#c0392b',e:'Discards 2 random cards from your hand after each play.',diff:'h',c:'Play as many cards as possible per hand. High-scoring 3-card plays work well here.'},
+  {n:'The Ox',ico:'🐂',col:'#e67e22',e:'Playing your most-played hand type sets your money to $0.',diff:'m',c:'Play a different hand type than your usual. Use a variety of hand types across this blind.'},
+  {n:'The House',ico:'🏠',col:'#8e44ad',e:'All cards are face down when drawn.',diff:'m',c:'Discard face-down cards and play the ones you can see. Tarots can reveal hidden cards.'},
+  {n:'The Wall',ico:'🧱',col:'#c0392b',e:'Extra large blind — ×4 chips required instead of ×2.',diff:'h',c:'Raw scoring challenge. Ensure your build is properly scaled before hitting this.'},
+  {n:'The Wheel',ico:'🎡',col:'#e67e22',e:'1 in 7 cards are drawn face down.',diff:'e',c:'Usually fine — discard face-down cards. Only problematic if you\'re very unlucky.'},
+  {n:'The Arm',ico:'💪',col:'#8e44ad',e:'Decreases level of played poker hand by 1 after each play.',diff:'h',c:'Mix up your hand types so no single hand gets degraded repeatedly. Very dangerous for single-hand strategies.'},
+  {n:'The Club',ico:'♣️',col:'#c0392b',e:'All Club cards are debuffed (don\'t score).',diff:'m',c:'Avoid playing Club cards. If your Flush build uses Clubs, consider rerolling the blind with a Boss Tag.'},
+  {n:'The Fish',ico:'🐟',col:'#2980b9',e:'Cards are drawn face down after each played hand.',diff:'h',c:'Beat it in as few hands as possible — ideally one. One-shot scoring builds shine here.'},
+  {n:'The Psychic',ico:'🔮',col:'#8e44ad',e:'You must play exactly 5 cards.',diff:'e',c:'Always play 5 cards. Flush and Straight builds naturally do this anyway.'},
+  {n:'The Goad',ico:'🗡️',col:'#c0392b',e:'All Spade cards are debuffed.',diff:'m',c:'Avoid Spade cards. Heart or Diamond Flush builds are unaffected.'},
+  {n:'The Water',ico:'💧',col:'#2980b9',e:'No discards for this round.',diff:'h',c:'Build a consistent deck so any 8 cards give you a workable hand. Can\'t fish for cards here.'},
+  {n:'The Window',ico:'🪟',col:'#e67e22',e:'All Diamond cards are debuffed.',diff:'m',c:'Avoid Diamonds. Heart or Club Flush builds are fine here.'},
+  {n:'The Manacle',ico:'⛓️',col:'#8e44ad',e:'-1 hand size for this round.',diff:'m',c:'You draw one fewer card. Pair and High Card builds handle this better than 5-card hand types.'},
+  {n:'The Eye',ico:'👁️',col:'#c0392b',e:'No repeat hand types — each hand played must be unique.',diff:'h',c:'Prepare a variety of hand types. Very hard for builds that play the same hand repeatedly.'},
+  {n:'The Mouth',ico:'👄',col:'#e67e22',e:'Only 1 hand type can be played this round.',diff:'h',c:'You\'re locked to one hand type. Make sure you can score enough with just that hand.'},
+  {n:'The Plant',ico:'🌿',col:'#27ae60',e:'All face cards (K, Q, J) are debuffed.',diff:'h',c:'Don\'t play face cards. Number-card builds are unaffected. Face card builds are severely punished.'},
+  {n:'The Needle',ico:'📍',col:'#8e44ad',e:'Only 1 hand to play total.',diff:'h',c:'Beat it in ONE hand. You need a build that can score enormously in a single play.'},
+  {n:'The Head',ico:'💀',col:'#c0392b',e:'All Heart cards are debuffed.',diff:'m',c:'Avoid Hearts. Spade, Club, or Diamond Flush builds are unaffected.'},
+  {n:'The Tooth',ico:'🦷',col:'#e67e22',e:'Lose $1 for each card played.',diff:'e',c:'Play fewer cards per hand. 3-card or low-card-count plays minimise the money loss.'},
+  {n:'The Flint',ico:'🪨',col:'#8e44ad',e:'Base Chips and Mult are halved.',diff:'h',c:'Your jokers carry you here — base stats are halved but joker effects are unchanged. ×Mult jokers handle this best.'},
+  {n:'The Mark',ico:'🎯',col:'#c0392b',e:'All face cards are drawn face down.',diff:'m',c:'Discard face-down face cards and play with number cards. Treat them as unknowns.'},
+  // Ante 8 Showdown Bosses
+  {n:'Crimson Heart',ico:'❤️‍🔥',col:'#c0392b',e:'SHOWDOWN: One random Joker is disabled each hand.',diff:'h',c:'Your most critical joker can go offline at any moment. Spread your power across multiple jokers rather than relying on one.',showdown:true},
+  {n:'Cerulean Bell',ico:'🔔',col:'#2980b9',e:'SHOWDOWN: One card is forced into your hand each draw.',diff:'h',c:'A dead card eats a slot every hand. Builds that score well with fewer cards handle this better.',showdown:true},
+  {n:'The Verdant Leaf',ico:'🍃',col:'#27ae60',e:'SHOWDOWN: All cards are debuffed until a Stone Card is played.',diff:'h',c:'YOU NEED A STONE CARD before Ante 8. Create one using The Tower tarot before you reach here.',showdown:true},
+  {n:'The Violet Vessel',ico:'🫙',col:'#8e44ad',e:'SHOWDOWN: Blind is extremely large (×6 chips required).',diff:'h',c:'Pure scoring challenge. Make sure your build is fully scaled and jokers are maxed before Ante 8.',showdown:true},
+  {n:'The Amber Acorn',ico:'🌰',col:'#d4a843',e:'SHOWDOWN: Flips all Joker effects.',diff:'h',c:'+Mult becomes -Mult, etc. Builds using only ×Mult jokers (not +Mult) are mostly unaffected.',showdown:true},
+];
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+let curRarity = 'all';
+let curCardCat = 'tarot';
+let searchIdx = [];
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+function init(){
+  buildSearchIndex();
+  renderGuide();
+  renderHands();
+  renderJokers();
+  renderCardCatTabs();
+  renderCards();
+  renderBosses();
+}
+
+// ══════════════════════════════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════════════════════════════
+function buildSearchIndex(){
+  JOKERS.forEach(j=>searchIdx.push({type:'joker',n:j.n,desc:j.r+' · '+j.e,ico:j.ico,col:'#c0392b'}));
+  TAROTS.forEach(t=>searchIdx.push({type:'tarot',n:t.n,desc:'Tarot · '+t.e,ico:t.ico,col:'#8e44ad'}));
+  PLANETS.forEach(p=>searchIdx.push({type:'planet',n:p.n,desc:'Planet · '+p.hand+' · '+p.e,ico:p.ico,col:'#2980b9'}));
+  SPECTRALS.forEach(s=>searchIdx.push({type:'spectral',n:s.n,desc:'Spectral · '+s.e,ico:s.ico,col:'#27ae60'}));
+  BOSSES.forEach(b=>searchIdx.push({type:'boss',n:b.n,desc:'Boss Blind · '+b.e,ico:b.ico,col:'#e67e22'}));
+  HANDS.forEach(h=>searchIdx.push({type:'hand',n:h.n,desc:'Poker Hand · '+h.chips+' chips × '+h.mult+' mult',ico:'🃏',col:'#d4a843'}));
+}
+function openSearch(){
+  document.getElementById('srch-layer').classList.add('open');
+  setTimeout(()=>document.getElementById('sl-inp').focus(),100);
+}
+function closeSearch(){
+  document.getElementById('srch-layer').classList.remove('open');
+  document.getElementById('sl-inp').value='';
+  document.getElementById('sl-res').innerHTML='<div class="sl-empty">Search for any joker, card,<br>boss blind, or scoring rule</div>';
+}
+function doSearch(){
+  const q=document.getElementById('sl-inp').value.trim().toLowerCase();
+  if(!q){document.getElementById('sl-res').innerHTML='<div class="sl-empty">Search for any joker, card,<br>boss blind, or scoring rule</div>';return;}
+  const hits=searchIdx.filter(x=>(x.n+' '+x.desc).toLowerCase().includes(q)).slice(0,25);
+  if(!hits.length){document.getElementById('sl-res').innerHTML='<div class="sl-empty">Nothing found for "'+q+'"</div>';return;}
+  document.getElementById('sl-res').innerHTML=hits.map(h=>`
+    <div class="sl-item" onclick="handleSearchHit('${h.type}')">
+      <div class="sl-icon" style="background:${h.col}20">${h.ico}</div>
+      <div>
+        <div class="sl-name">${h.n}</div>
+        <div class="sl-desc">${h.desc.slice(0,70)}${h.desc.length>70?'...':''}</div>
+        <span class="sl-tag" style="background:${h.col}18;color:${h.col};border:1px solid ${h.col}35">${h.type.toUpperCase()}</span>
+      </div>
+    </div>`).join('');
+}
+function handleSearchHit(type){
+  closeSearch();
+  const navBtns=document.querySelectorAll('.navbtn');
+  if(type==='joker'){setView('jokers',navBtns[2]);}
+  else if(type==='tarot'||type==='planet'||type==='spectral'){setView('cards',navBtns[3]);}
+  else if(type==='boss'){setView('bosses',navBtns[4]);}
+  else if(type==='hand'){setView('hands',navBtns[1]);}
+}
+
+// ══════════════════════════════════════════════════════════════
+// VIEW SWITCHING
+// ══════════════════════════════════════════════════════════════
+function setView(v,btn){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.navbtn').forEach(x=>x.classList.remove('on'));
+  document.getElementById('v-'+v).classList.add('on');
+  btn.classList.add('on');
+  document.getElementById('content').scrollTop=0;
+}
+
+// ══════════════════════════════════════════════════════════════
+// GUIDE
+// ══════════════════════════════════════════════════════════════
+function renderGuide(){
+  document.getElementById('guide-cards').innerHTML=GUIDE_SECTIONS.map((s,i)=>`
+    <div class="gcard">
+      <div class="gcard-head" onclick="toggleGuideCard(this)">
+        <div class="gcard-num">${i+1}</div>
+        <div class="gcard-n">${s.n}</div>
+        <div class="gcard-arr">›</div>
+      </div>
+      <div class="gcard-body">
+        ${s.rules.map(r=>`<div class="grule">${r}</div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function toggleGuideCard(head){
+  const body=head.nextElementSibling;
+  const arr=head.querySelector('.gcard-arr');
+  const open=body.classList.toggle('open');
+  arr.classList.toggle('open',open);
+}
+
+// ══════════════════════════════════════════════════════════════
+// HANDS
+// ══════════════════════════════════════════════════════════════
+function renderHands(){
+  document.getElementById('hands-list').innerHTML=HANDS.map((h,i)=>`
+    <div class="hand-row" onclick="showHandSheet(${i})">
+      <div class="hr-rank">#${h.r}</div>
+      <div class="hr-info">
+        <div class="hr-name">${h.n}</div>
+        <div class="hr-ex">${h.ex}</div>
+      </div>
+      <span class="hr-chips">${h.chips}</span>
+      <span class="hr-mult">×${h.mult}</span>
+    </div>`).join('');
+}
+function showHandSheet(i){
+  const h=HANDS[i];
+  document.getElementById('sh-title').textContent=h.n;
+  document.getElementById('sh-sub').innerHTML=
+    `<span style="color:var(--blue);font-family:var(--M)">${h.chips} chips</span> × <span style="color:var(--red);font-family:var(--M)">${h.mult} mult</span> = <span style="color:var(--gold);font-family:var(--M)">${h.chips*h.mult} base score</span>`;
+  document.getElementById('sh-body').innerHTML=`
+    <div style="margin-bottom:12px">
+      <div class="sh-sec-label">What it is</div>
+      <p style="font-size:12px;color:var(--cream3);line-height:1.65;margin-bottom:6px">${h.desc}</p>
+      <div style="font-family:var(--M);font-size:12px;color:var(--cream4);background:var(--bg3);padding:6px 10px;border-radius:4px">${h.ex}</div>
+    </div>
+    <div>
+      <div class="sh-sec-label">Strategy Tips</div>
+      ${h.tips.map(t=>`<div class="sh-rule">${t}</div>`).join('')}
+    </div>`;
+  openSheet();
+}
+function openSheet(){
+  document.getElementById('sheet-bg').classList.add('on');
+  document.getElementById('sheet').classList.add('on');
+  document.getElementById('sheet').scrollTop=0;
+}
+function closeSheet(){
+  document.getElementById('sheet-bg').classList.remove('on');
+  document.getElementById('sheet').classList.remove('on');
+}
+// swipe to close sheet
+let _sy=0;
+document.getElementById('sheet').addEventListener('touchstart',e=>{_sy=e.touches[0].clientY},{passive:true});
+document.getElementById('sheet').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-_sy>70)closeSheet();},{passive:true});
+
+// ══════════════════════════════════════════════════════════════
+// JOKERS
+// ══════════════════════════════════════════════════════════════
+const RarityColors={all:'all',common:'common',uncommon:'uncommon',rare:'rare',legendary:'legendary'};
+const RarityLabel={all:'All',common:'Common',uncommon:'Uncommon',rare:'Rare',legendary:'Legendary'};
+const RarityIcoBg={common:'rgba(255,255,255,.06)',uncommon:'rgba(41,128,185,.14)',rare:'rgba(192,57,43,.14)',legendary:'rgba(212,168,67,.14)'};
+const TierLabel={s:'S Tier',a:'A Tier',b:'B Tier',c:'C Tier'};
+
+function renderJokers(){
+  // Pills
+  const pills=['all','common','uncommon','rare','legendary'];
+  document.getElementById('rarity-pills').innerHTML=pills.map(r=>`
+    <span class="pill ${curRarity===r?'active-'+r:''}" onclick="setRarity('${r}')">${RarityLabel[r]}</span>`).join('');
+  // List
+  const list=curRarity==='all'?JOKERS:JOKERS.filter(j=>j.r===curRarity);
+  document.getElementById('j-count').textContent=list.length+' jokers';
+  const rcls={common:'rc',uncommon:'ru',rare:'rr',legendary:'rl'};
+  const tcls={s:'ts',a:'ta',b:'tb',c:'tc'};
+  document.getElementById('jlist').innerHTML=list.map(j=>`
+    <div class="jcard" onclick="toggleJcard(this)">
+      <div class="jcard-top">
+        <div class="jcard-ico" style="background:${RarityIcoBg[j.r]||'rgba(255,255,255,.06)'}">${j.ico}</div>
+        <div class="jcard-info">
+          <div class="jcard-name">${j.n}</div>
+          <div class="jcard-eff">${j.e}</div>
+          <div class="jcard-meta">
+            <span class="r-badge ${rcls[j.r]||'rc'}">${j.r.toUpperCase()}</span>
+            <span class="tier-badge ${tcls[j.tier]||'tc'}">${TierLabel[j.tier]||''}</span>
+          </div>
+        </div>
+      </div>
+      <div class="jcard-expand">
+        <div class="je-tip">${j.t}</div>
+        ${j.s?`<div class="je-syn">${j.s}</div>`:''}
+      </div>
+    </div>`).join('')||'<div style="text-align:center;padding:30px;color:var(--cream4);font-size:12px">No jokers found</div>';
+}
+function setRarity(r){
+  curRarity=r;
+  renderJokers();
+  document.getElementById('content').scrollTop=0;
+}
+function toggleJcard(el){
+  const ex=el.querySelector('.jcard-expand');
+  const wasOpen=ex.classList.contains('open');
+  document.querySelectorAll('.jcard-expand.open').forEach(x=>x.classList.remove('open'));
+  if(!wasOpen)ex.classList.add('open');
+}
+
+// ══════════════════════════════════════════════════════════════
+// CARDS (TAROT / PLANET / SPECTRAL)
+// ══════════════════════════════════════════════════════════════
+const CardCatData={tarot:TAROTS,planet:PLANETS,spectral:SPECTRALS};
+const CardCatLabel={tarot:'🔮 Tarot',planet:'🪐 Planet',spectral:'✨ Spectral'};
+const CardCatCol={tarot:'#8e44ad',planet:'#2980b9',spectral:'#27ae60'};
+
+function renderCardCatTabs(){
+  document.getElementById('card-pills').innerHTML=['tarot','planet','spectral'].map(c=>`
+    <span class="pill ${curCardCat===c?'active-'+c:''}" onclick="setCardCat('${c}')">${CardCatLabel[c]}</span>`).join('');
+}
+function setCardCat(c){
+  curCardCat=c;
+  renderCardCatTabs();
+  renderCards();
+  document.getElementById('content').scrollTop=0;
+}
+function renderCards(){
+  const data=CardCatData[curCardCat];
+  const col=CardCatCol[curCardCat];
+  document.getElementById('clist').innerHTML=data.map(c=>`
+    <div class="ccard" onclick="toggleCCard(this)">
+      <div class="cc-row">
+        <div class="cc-ico" style="background:${col}18">${c.ico}</div>
+        <div class="cc-info">
+          <div class="cc-name">${c.n}</div>
+          <div class="cc-eff">${c.e}${c.hand?` <span style="font-family:var(--M);font-size:9px;color:var(--cream4)">(${c.hand})</span>`:''}</div>
+        </div>
+      </div>
+      <div class="cc-tip">
+        💡 ${c.t}
+        ${c.w?`<div class="cc-warn">⚠️ ${c.w}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+function toggleCCard(el){
+  const tip=el.querySelector('.cc-tip');
+  const wasOpen=tip.classList.contains('open');
+  document.querySelectorAll('.cc-tip.open').forEach(x=>x.classList.remove('open'));
+  if(!wasOpen)tip.classList.add('open');
+}
+
+// ══════════════════════════════════════════════════════════════
+// BOSS BLINDS
+// ══════════════════════════════════════════════════════════════
+function renderBosses(){
+  const dcls={e:'diff-e',m:'diff-m',h:'diff-h'};
+  const dlbl={e:'Easy',m:'Moderate',h:'Dangerous'};
+  document.getElementById('blist').innerHTML=BOSSES.map(b=>`
+    <div class="bcard" onclick="toggleBoss(this)">
+      <div class="bbar" style="background:${b.showdown?'var(--gold)':b.col}"></div>
+      <div class="bcard-body">
+        <div class="bc-row">
+          <div class="bc-icon">${b.ico}</div>
+          <div class="bc-info">
+            <div class="bc-name">${b.n}${b.showdown?'<span class="showdown-tag">ANTE 8</span>':''}</div>
+            <div class="bc-eff">${b.e.replace('SHOWDOWN: ','')}</div>
+            <span class="bc-diff ${dcls[b.diff]}">${dlbl[b.diff]} difficulty</span>
+          </div>
+        </div>
+        <div class="bc-detail">
+          <div class="bc-counter">${b.c}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function toggleBoss(el){
+  const det=el.querySelector('.bc-detail');
+  const wasOpen=det.classList.contains('open');
+  document.querySelectorAll('.bc-detail.open').forEach(x=>x.classList.remove('open'));
+  if(!wasOpen)det.classList.add('open');
+}
+
+// Start
+init();
+</script>
+</body>
+</html>
